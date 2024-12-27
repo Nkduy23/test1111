@@ -87,48 +87,45 @@
       let autoSlideInterval;
       let startX, endX;
 
+      // Chuyển đến slide theo index
       function goToSlide(index) {
         if (index >= slides.length) {
           currentIndex = 0;
-          slider.style.transition = "none";
         } else if (index < 0) {
           currentIndex = slides.length - 1;
         } else {
           currentIndex = index;
         }
+
+        // Đảm bảo transition mượt mà ngay cả khi quay lại slide đầu tiên
+        slider.style.transition = "transform 0.5s ease";
         slider.style.transform = `translateX(-${currentIndex * 100}%)`;
       }
 
+      // Dừng tự động chuyển slide
       function stopAutoSlide() {
         clearInterval(autoSlideInterval);
       }
 
-      function updateSlide() {
-        slider.style.transition = "transform 0.5s ease";
+      // Bắt đầu tự động chuyển slide
+      function startAutoSlide() {
+        autoSlideInterval = setInterval(() => {
+          goToSlide(currentIndex + 1);
+        }, 4000);
       }
 
+      // Các sự kiện cho nút "prev" và "next"
       prevBtn.addEventListener("click", () => {
-        updateSlide();
         goToSlide(currentIndex - 1);
         stopAutoSlide();
         startAutoSlide();
       });
 
       nextBtn.addEventListener("click", () => {
-        updateSlide();
         goToSlide(currentIndex + 1);
         stopAutoSlide();
         startAutoSlide();
       });
-
-      function startAutoSlide(index) {
-        autoSlideInterval = setInterval(() => {
-          updateSlide();
-          goToSlide(currentIndex + 1);
-        }, 4000);
-      }
-
-      startAutoSlide();
 
       // Xử lý sự kiện swipe trên mobile
       function touchStart(e) {
@@ -145,12 +142,11 @@
         } else if (endX - startX > 50) {
           goToSlide(currentIndex - 1); // swipe right
         }
-        updateSlide();
         stopAutoSlide();
         startAutoSlide();
       }
 
-      // Xử lý sự kiện swipe trên PC (desktop)
+      // Sự kiện chuột trên desktop
       let mouseStartX, mouseEndX;
 
       function mouseDown(e) {
@@ -167,20 +163,20 @@
         } else if (mouseEndX - mouseStartX > 50) {
           goToSlide(currentIndex - 1); // swipe right
         }
-        updateSlide();
         stopAutoSlide();
         startAutoSlide();
       }
 
-      // Đăng ký sự kiện cảm ứng cho thiết bị di động
+      // Đăng ký sự kiện cảm ứng và chuột
       slider.addEventListener("touchstart", touchStart);
       slider.addEventListener("touchmove", touchMove);
       slider.addEventListener("touchend", touchEnd);
-
-      // Đăng ký sự kiện chuột cho desktop
       slider.addEventListener("mousedown", mouseDown);
       slider.addEventListener("mousemove", mouseMove);
       slider.addEventListener("mouseup", mouseUp);
+
+      // Bắt đầu auto slide khi trang được tải
+      startAutoSlide();
     </script>
   </body>
 </html>
