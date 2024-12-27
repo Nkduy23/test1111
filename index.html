@@ -70,9 +70,9 @@
   <body>
     <div class="slider-container">
       <div class="slider">
-        <div class="slide"><img src="slider-mb-1.jpg" alt=""></div>
-        <div class="slide"><img src="slider-mb-2.jpg" alt=""></div>
-        <div class="slide"><img src="slider-mb-3.jpg" alt=""></div>
+        <div class="slide"><img src="slider-mb-1.jpg" alt="" /></div>
+        <div class="slide"><img src="slider-mb-2.jpg" alt="" /></div>
+        <div class="slide"><img src="slider-mb-3.jpg" alt="" /></div>
       </div>
       <button class="prev">❮</button>
       <button class="next">❯</button>
@@ -100,54 +100,61 @@
 
       // Ngừng hành vi mặc định khi kéo ảnh
       function preventDefault(e) {
-        e.preventDefault();
+        e.preventDefault(); // Ngừng hành vi mặc định của trình duyệt
       }
-
-      slider.addEventListener("dragstart", preventDefault);
 
       // Xử lý sự kiện swipe trên mobile
       function touchStart(e) {
-        startX = e.touches[0].clientX;
+        startX = e.touches[0].clientX; // Xác định vị trí bắt đầu vuốt
+        e.preventDefault(); // Ngừng hành vi mặc định của trình duyệt
       }
 
       function touchMove(e) {
-        endX = e.touches[0].clientX;
+        endX = e.touches[0].clientX; // Xác định vị trí vuốt
       }
 
       function touchEnd() {
         if (startX - endX > 50) {
-          goToSlide(currentIndex + 1); // swipe left
+          goToSlide(currentIndex + 1); // Vuốt trái
         } else if (endX - startX > 50) {
-          goToSlide(currentIndex - 1); // swipe right
+          goToSlide(currentIndex - 1); // Vuốt phải
         }
+        slider.style.transition = "transform 0.5s ease";
       }
 
+      // Đảm bảo hành vi mặc định không xảy ra khi vuốt
       slider.addEventListener("touchstart", touchStart);
       slider.addEventListener("touchmove", touchMove);
       slider.addEventListener("touchend", touchEnd);
+      slider.addEventListener("touchcancel", preventDefault); // Ngừng hành vi khi có sự gián đoạn
 
-      // Xử lý sự kiện swipe trên PC (desktop)
+      // Xử lý sự kiện chuột (mouse) trên PC
       let mouseStartX, mouseEndX;
 
       function mouseDown(e) {
-        mouseStartX = e.clientX;
+        mouseStartX = e.clientX; // Xác định vị trí bắt đầu chuột
       }
 
       function mouseMove(e) {
-        mouseEndX = e.clientX;
+        mouseEndX = e.clientX; // Xác định vị trí chuột di chuyển
       }
 
       function mouseUp() {
         if (mouseStartX - mouseEndX > 50) {
-          goToSlide(currentIndex + 1); // swipe left
+          goToSlide(currentIndex + 1); // Vuốt trái
         } else if (mouseEndX - mouseStartX > 50) {
-          goToSlide(currentIndex - 1); // swipe right
+          goToSlide(currentIndex - 1); // Vuốt phải
         }
+        slider.style.transition = "transform 0.5s ease";
       }
 
+      // Đảm bảo hành vi mặc định không xảy ra khi kéo chuột
       slider.addEventListener("mousedown", mouseDown);
       slider.addEventListener("mousemove", mouseMove);
       slider.addEventListener("mouseup", mouseUp);
+
+      // Ngừng hành vi mặc định khi kéo chuột
+      slider.addEventListener("dragstart", preventDefault);
     </script>
   </body>
 </html>
