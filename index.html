@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Swipe Slider</title>
+    <title>Slider</title>
     <style>
       * {
         margin: 0;
@@ -70,9 +70,9 @@
   <body>
     <div class="slider-container">
       <div class="slider">
-        <div class="slide">Slide 1</div>
-        <div class="slide">Slide 2</div>
-        <div class="slide">Slide 3</div>
+        <div class="slide"><img src="slider-mb-1.jpg" alt=""></div>
+        <div class="slide"><img src="slider-mb-2.jpg" alt=""></div>
+        <div class="slide"><img src="slider-mb-3.jpg" alt=""></div>
       </div>
       <button class="prev">❮</button>
       <button class="next">❯</button>
@@ -84,10 +84,9 @@
       const prevBtn = document.querySelector(".prev");
       const nextBtn = document.querySelector(".next");
       let currentIndex = 0;
-      let autoSlideInterval;
       let startX, endX;
 
-      // Chuyển đến slide theo index
+      // Hàm chuyển đến slide mong muốn
       function goToSlide(index) {
         if (index >= slides.length) {
           currentIndex = 0;
@@ -96,36 +95,15 @@
         } else {
           currentIndex = index;
         }
-
-        // Đảm bảo transition mượt mà ngay cả khi quay lại slide đầu tiên
-        slider.style.transition = "transform 0.5s ease";
         slider.style.transform = `translateX(-${currentIndex * 100}%)`;
       }
 
-      // Dừng tự động chuyển slide
-      function stopAutoSlide() {
-        clearInterval(autoSlideInterval);
+      // Ngừng hành vi mặc định khi kéo ảnh
+      function preventDefault(e) {
+        e.preventDefault();
       }
 
-      // Bắt đầu tự động chuyển slide
-      function startAutoSlide() {
-        autoSlideInterval = setInterval(() => {
-          goToSlide(currentIndex + 1);
-        }, 4000);
-      }
-
-      // Các sự kiện cho nút "prev" và "next"
-      prevBtn.addEventListener("click", () => {
-        goToSlide(currentIndex - 1);
-        stopAutoSlide();
-        startAutoSlide();
-      });
-
-      nextBtn.addEventListener("click", () => {
-        goToSlide(currentIndex + 1);
-        stopAutoSlide();
-        startAutoSlide();
-      });
+      slider.addEventListener("dragstart", preventDefault);
 
       // Xử lý sự kiện swipe trên mobile
       function touchStart(e) {
@@ -142,11 +120,13 @@
         } else if (endX - startX > 50) {
           goToSlide(currentIndex - 1); // swipe right
         }
-        stopAutoSlide();
-        startAutoSlide();
       }
 
-      // Sự kiện chuột trên desktop
+      slider.addEventListener("touchstart", touchStart);
+      slider.addEventListener("touchmove", touchMove);
+      slider.addEventListener("touchend", touchEnd);
+
+      // Xử lý sự kiện swipe trên PC (desktop)
       let mouseStartX, mouseEndX;
 
       function mouseDown(e) {
@@ -163,20 +143,11 @@
         } else if (mouseEndX - mouseStartX > 50) {
           goToSlide(currentIndex - 1); // swipe right
         }
-        stopAutoSlide();
-        startAutoSlide();
       }
 
-      // Đăng ký sự kiện cảm ứng và chuột
-      slider.addEventListener("touchstart", touchStart);
-      slider.addEventListener("touchmove", touchMove);
-      slider.addEventListener("touchend", touchEnd);
       slider.addEventListener("mousedown", mouseDown);
       slider.addEventListener("mousemove", mouseMove);
       slider.addEventListener("mouseup", mouseUp);
-
-      // Bắt đầu auto slide khi trang được tải
-      startAutoSlide();
     </script>
   </body>
 </html>
