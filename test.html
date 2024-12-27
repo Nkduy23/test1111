@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Swipe Slider</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .slider-container {
+        width: 80%;
+        max-width: 600px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slider {
+        display: flex;
+        transition: transform 0.5s ease;
+      }
+
+      .slide {
+        min-width: 100%;
+        height: 300px;
+        background-color: #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        color: #333;
+      }
+
+      .prev,
+      .next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        border: none;
+        padding: 10px;
+        font-size: 1.5em;
+        cursor: pointer;
+        z-index: 10;
+      }
+
+      .prev {
+        left: 10px;
+      }
+
+      .next {
+        right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slider-container">
+      <div class="slider">
+        <div class="slide">Slide 1</div>
+        <div class="slide">Slide 2</div>
+        <div class="slide">Slide 3</div>
+      </div>
+      <button class="prev">❮</button>
+      <button class="next">❯</button>
+    </div>
+
+    <script>
+      const slider = document.querySelector(".slider");
+      const slides = document.querySelectorAll(".slide");
+      const prevBtn = document.querySelector(".prev");
+      const nextBtn = document.querySelector(".next");
+      let currentIndex = 0;
+      let autoSlideInterval;
+      let startX, endX;
+
+      function goToSlide(index) {
+        if (index >= slides.length) {
+          currentIndex = 0;
+          slider.style.transition = "none";
+        } else if (index < 0) {
+          currentIndex = slides.length - 1;
+        } else {
+          currentIndex = index;
+        }
+        slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+      }
+
+      function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+      }
+
+      function updateSlide() {
+        slider.style.transition = "transform 0.5s ease";
+      }
+
+      prevBtn.addEventListener("click", () => {
+        updateSlide();
+        goToSlide(currentIndex - 1);
+        stopAutoSlide();
+        startAutoSlide();
+      });
+
+      nextBtn.addEventListener("click", () => {
+        updateSlide();
+        goToSlide(currentIndex + 1);
+        stopAutoSlide();
+        startAutoSlide();
+      });
+
+      function startAutoSlide(index) {
+        autoSlideInterval = setInterval(() => {
+          updateSlide();
+          goToSlide(currentIndex + 1);
+        }, 4000);
+      }
+
+      startAutoSlide();
+
+      // Xử lý sự kiện swipe trên mobile
+      function touchStart(e) {
+        startX = e.touches[0].clientX;
+      }
+
+      function touchMove(e) {
+        endX = e.touches[0].clientX;
+      }
+
+      function touchEnd() {
+        if (startX - endX > 50) {
+          goToSlide(currentIndex + 1); // swipe left
+        } else if (endX - startX > 50) {
+          goToSlide(currentIndex - 1); // swipe right
+        }
+        updateSlide();
+        stopAutoSlide();
+        startAutoSlide();
+      }
+
+      // Xử lý sự kiện swipe trên PC (desktop)
+      let mouseStartX, mouseEndX;
+
+      function mouseDown(e) {
+        mouseStartX = e.clientX;
+      }
+
+      function mouseMove(e) {
+        mouseEndX = e.clientX;
+      }
+
+      function mouseUp() {
+        if (mouseStartX - mouseEndX > 50) {
+          goToSlide(currentIndex + 1); // swipe left
+        } else if (mouseEndX - mouseStartX > 50) {
+          goToSlide(currentIndex - 1); // swipe right
+        }
+        updateSlide();
+        stopAutoSlide();
+        startAutoSlide();
+      }
+
+      // Đăng ký sự kiện cảm ứng cho thiết bị di động
+      slider.addEventListener("touchstart", touchStart);
+      slider.addEventListener("touchmove", touchMove);
+      slider.addEventListener("touchend", touchEnd);
+
+      // Đăng ký sự kiện chuột cho desktop
+      slider.addEventListener("mousedown", mouseDown);
+      slider.addEventListener("mousemove", mouseMove);
+      slider.addEventListener("mouseup", mouseUp);
+    </script>
+  </body>
+</html>
