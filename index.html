@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Slider</title>
+    <title>Swipe Slider</title>
     <style>
       * {
         margin: 0;
@@ -22,8 +22,8 @@
       }
 
       .slider-container {
-        width: 80%;
-        max-width: 600px;
+        width: 100%;
+        max-width: 100%;
         position: relative;
         overflow: hidden;
       }
@@ -35,7 +35,7 @@
 
       .slide {
         min-width: 100%;
-        height: 300px;
+        height: auto;
         background-color: #ddd;
         display: flex;
         justify-content: center;
@@ -70,9 +70,9 @@
   <body>
     <div class="slider-container">
       <div class="slider">
-        <div class="slide"><img src="slider-mb-1.jpg" alt="" /></div>
-        <div class="slide"><img src="slider-mb-2.jpg" alt="" /></div>
-        <div class="slide"><img src="slider-mb-3.jpg" alt="" /></div>
+        <div class="slide"><img src="slider-mb-1.jpg" alt=""></div>
+        <div class="slide"><img src="slider-mb-2.jpg" alt=""></div>
+        <div class="slide"><img src="slider-mb-3.jpg" alt=""></div>
       </div>
       <button class="prev">❮</button>
       <button class="next">❯</button>
@@ -84,12 +84,13 @@
       const prevBtn = document.querySelector(".prev");
       const nextBtn = document.querySelector(".next");
       let currentIndex = 0;
+      let autoSlideInterval;
       let startX, endX;
 
-      // Hàm chuyển đến slide mong muốn
       function goToSlide(index) {
         if (index >= slides.length) {
           currentIndex = 0;
+          slider.style.transition = "none";
         } else if (index < 0) {
           currentIndex = slides.length - 1;
         } else {
@@ -98,57 +99,91 @@
         slider.style.transform = `translateX(-${currentIndex * 100}%)`;
       }
 
+      function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+      }
+
+      function updateSlide() {
+        slider.style.transition = "transform 0.5s ease";
+      }
       // Ngừng hành vi mặc định khi kéo ảnh
       function preventDefault(e) {
         e.preventDefault(); // Ngừng hành vi mặc định của trình duyệt
       }
 
+      prevBtn.addEventListener("click", () => {
+        updateSlide();
+        goToSlide(currentIndex - 1);
+        stopAutoSlide();
+        startAutoSlide();
+      });
+
+      nextBtn.addEventListener("click", () => {
+        updateSlide();
+        goToSlide(currentIndex + 1);
+        stopAutoSlide();
+        startAutoSlide();
+      });
+
+      function startAutoSlide(index) {
+        autoSlideInterval = setInterval(() => {
+          updateSlide();
+          goToSlide(currentIndex + 1);
+        }, 4000);
+      }
+
+      startAutoSlide();
+
       // Xử lý sự kiện swipe trên mobile
       function touchStart(e) {
-        startX = e.touches[0].clientX; // Xác định vị trí bắt đầu vuốt
+        startX = e.touches[0].clientX;
         e.preventDefault(); // Ngừng hành vi mặc định của trình duyệt
       }
 
       function touchMove(e) {
-        endX = e.touches[0].clientX; // Xác định vị trí vuốt
+        endX = e.touches[0].clientX;
       }
 
       function touchEnd() {
         if (startX - endX > 50) {
-          goToSlide(currentIndex + 1); // Vuốt trái
+          goToSlide(currentIndex + 1); // swipe left
         } else if (endX - startX > 50) {
-          goToSlide(currentIndex - 1); // Vuốt phải
+          goToSlide(currentIndex - 1); // swipe right
         }
-        slider.style.transition = "transform 0.5s ease";
+        updateSlide();
+        stopAutoSlide();
+        startAutoSlide();
       }
 
-      // Đảm bảo hành vi mặc định không xảy ra khi vuốt
+      // Xử lý sự kiện swipe trên PC (desktop)
+      let mouseStartX, mouseEndX;
+
+      function mouseDown(e) {
+        mouseStartX = e.clientX;
+      }
+
+      function mouseMove(e) {
+        mouseEndX = e.clientX;
+      }
+
+      function mouseUp() {
+        if (mouseStartX - mouseEndX > 50) {
+          goToSlide(currentIndex + 1); // swipe left
+        } else if (mouseEndX - mouseStartX > 50) {
+          goToSlide(currentIndex - 1); // swipe right
+        }
+        updateSlide();
+        stopAutoSlide();
+        startAutoSlide();
+      }
+
+      // Đăng ký sự kiện cảm ứng cho thiết bị di động
       slider.addEventListener("touchstart", touchStart);
       slider.addEventListener("touchmove", touchMove);
       slider.addEventListener("touchend", touchEnd);
       slider.addEventListener("touchcancel", preventDefault); // Ngừng hành vi khi có sự gián đoạn
 
-      // Xử lý sự kiện chuột (mouse) trên PC
-      let mouseStartX, mouseEndX;
-
-      function mouseDown(e) {
-        mouseStartX = e.clientX; // Xác định vị trí bắt đầu chuột
-      }
-
-      function mouseMove(e) {
-        mouseEndX = e.clientX; // Xác định vị trí chuột di chuyển
-      }
-
-      function mouseUp() {
-        if (mouseStartX - mouseEndX > 50) {
-          goToSlide(currentIndex + 1); // Vuốt trái
-        } else if (mouseEndX - mouseStartX > 50) {
-          goToSlide(currentIndex - 1); // Vuốt phải
-        }
-        slider.style.transition = "transform 0.5s ease";
-      }
-
-      // Đảm bảo hành vi mặc định không xảy ra khi kéo chuột
+      // Đăng ký sự kiện chuột cho desktop
       slider.addEventListener("mousedown", mouseDown);
       slider.addEventListener("mousemove", mouseMove);
       slider.addEventListener("mouseup", mouseUp);
