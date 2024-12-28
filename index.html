@@ -22,8 +22,8 @@
       }
 
       .slider-container {
-        width: 100%;
-        max-width: 100%;
+        width: 80%;
+        max-width: 600px;
         position: relative;
         overflow: hidden;
       }
@@ -35,7 +35,7 @@
 
       .slide {
         min-width: 100%;
-        height: auto;
+        height: 300px;
         background-color: #ddd;
         display: flex;
         justify-content: center;
@@ -70,9 +70,9 @@
   <body>
     <div class="slider-container">
       <div class="slider">
-        <div class="slide"><img src="slider-mb-1.jpg" alt=""></div>
-        <div class="slide"><img src="slider-mb-2.jpg" alt=""></div>
-        <div class="slide"><img src="slider-mb-3.jpg" alt=""></div>
+        <div class="slide">Slide 1</div>
+        <div class="slide">Slide 2</div>
+        <div class="slide">Slide 3</div>
       </div>
       <button class="prev">❮</button>
       <button class="next">❯</button>
@@ -106,10 +106,6 @@
       function updateSlide() {
         slider.style.transition = "transform 0.5s ease";
       }
-      // Ngừng hành vi mặc định khi kéo ảnh
-      function preventDefault(e) {
-        e.preventDefault(); // Ngừng hành vi mặc định của trình duyệt
-      }
 
       prevBtn.addEventListener("click", () => {
         updateSlide();
@@ -137,7 +133,6 @@
       // Xử lý sự kiện swipe trên mobile
       function touchStart(e) {
         startX = e.touches[0].clientX;
-        e.preventDefault(); // Ngừng hành vi mặc định của trình duyệt
       }
 
       function touchMove(e) {
@@ -181,15 +176,11 @@
       slider.addEventListener("touchstart", touchStart);
       slider.addEventListener("touchmove", touchMove);
       slider.addEventListener("touchend", touchEnd);
-      slider.addEventListener("touchcancel", preventDefault); // Ngừng hành vi khi có sự gián đoạn
 
       // Đăng ký sự kiện chuột cho desktop
       slider.addEventListener("mousedown", mouseDown);
       slider.addEventListener("mousemove", mouseMove);
       slider.addEventListener("mouseup", mouseUp);
-
-      // Ngừng hành vi mặc định khi kéo chuột
-      slider.addEventListener("dragstart", preventDefault);
     </script>
   </body>
 </html>
